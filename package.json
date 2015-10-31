@@ -1,0 +1,17 @@
+{
+  "name": "aka-archiver",
+  "version": "0.0.1",
+  "description": "Back up your Akamai GTM configuration as JSON files",
+  "author": "Mike Ball",
+  "main": "archive.js",
+  "scripts": {
+    "test": "TODO"
+  },
+  "bin": {
+    "aka-archive": "archive.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "edgegrid": "https://github.com/mdb/AkamaiOPEN-edgegrid-node.git#redirect-support"
+  }
+}
