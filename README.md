@@ -6,7 +6,7 @@ A Node-based commandline tool that saves Akamai GTM configuration to local JSON 
 
 Akamai provides no rollback functionality, version control, or backups of GTM domain, property, and data center configuration.
 
-`aka-archiver` saves GTM configuration to JSON files. The JSON can be used to restore your Akamai GTM configuration should it disappear.
+`aka-archiver` saves GTM configuration to JSON files. The JSON can be used to restore your Akamai GTM configuration should it disappear or be problematically modified.
 
 ## Installation
 
