@@ -5,7 +5,7 @@
   "author": "Mike Ball",
   "main": "archive.js",
   "scripts": {
-    "test": "TODO"
+    "test": "node_modules/.bin/mocha"
   },
   "bin": {
     "aka-archive": "archive.js"
@@ -13,5 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "edgegrid": "https://github.com/mdb/AkamaiOPEN-edgegrid-node.git#redirect-support"
+  },
+  "devDependencies": {
+    "mocha": "1.14.x",
+    "supertest": "0.15.x",
+    "nock": "0.51.x"
   }
 }
