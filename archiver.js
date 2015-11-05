@@ -56,9 +56,7 @@ function Archiver(config) {
 
     this._fetch(endpoints[type](domain), function(data) {
       fs.writeFile(file, data, function(err) {
-        if(err) {
-          return console.log(err);
-        }
+        if(err) { return console.log(err); }
 
         console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
 
