@@ -1,66 +1,71 @@
 var EdgeGrid = require('edgegrid'),
     endpoints = require('./endpoints'),
-    fs = require('fs'),
-    eg = new EdgeGrid(
-      process.env.AKAMAI_EDGEGRID_CLIENT_TOKEN,
-      process.env.AKAMAI_EDGEGRID_CLIENT_SECRET,
-      process.env.AKAMAI_EDGEGRID_ACCESS_TOKEN,
-      process.env.AKAMAI_EDGEGRID_HOST
-    );
+    fs = require('fs');
 
-function authenticate(path) {
-  eg.auth({
-    'path': path,
-    'method': 'GET',
-    'headers': {
-      'Content-Type': 'application/json'
-    },
-    'body': {}
-  });
-}
+function Archiver(config) {
+  this.eg = new EdgeGrid(
+    config.clientToken,
+    config.clientSecret,
+    config.accessToken,
+    config.edgegridHost
+  );
 
-function fetch(path, callback) {
-  authenticate(path);
+  this.domain = function(domain, callback) {
+    this._archive('domain', domain, callback);
+  };
 
-  eg.send(function(data, response) {
-    callback(data);
-  });
-}
+  this.properties = function(domain, callback) {
+    this._archive('properties', domain, callback);
+  };
 
-function archive(type, domain) {
-  var file = domain + '_' + type + '.json';
+  this.dataCenters = function(domain, callback) {
+    this._archive('dataCenters', domain, callback);
+  };
 
-  fetch(endpoints[type](domain), function(data) {
-    fs.writeFile(file, data, function(err) {
-      if(err) {
-        return console.log(err);
-      }
+  this.datacenters = function(domain, callback) {
+    this.dataCenters(domain, callback);
+  };
 
-      console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
-    });
-  });
-}
-
-module.exports = {
-  domain: function(domain) {
-    archive('domain', domain);
-  },
-
-  properties: function(domain) {
-    archive('properties', domain);
-  },
-
-  dataCenters: function(domain) {
-    archive('dataCenters', domain);
-  },
-
-  datacenters: function(domain) {
-    this.dataCenters(domain);
-  },
-
-  all: function(domain) {
+  this.all = function(domain) {
     this.domain(domain);
     this.properties(domain);
     this.dataCenters(domain);
-  }
-};
+  };
+
+  this._authenticate = function(path) {
+    this.eg.auth({
+      'path': path,
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json'
+      },
+      'body': {}
+    });
+  };
+
+  this._fetch = function(path, callback) {
+    this._authenticate(path);
+
+    this.eg.send(function(data, response) {
+      callback(data);
+    });
+  };
+
+  this._archive = function(type, domain, callback) {
+    var file = domain + '_' + type + '.json';
+
+    this._fetch(endpoints[type](domain), function(data) {
+      fs.writeFile(file, data, function(err) {
+        if(err) {
+          return console.log(err);
+        }
+
+        console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
+
+        if (callback) { callback(err); }
+      });
+    });
+  };
+}
+
+module.exports = Archiver;

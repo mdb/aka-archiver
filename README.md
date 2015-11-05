@@ -16,6 +16,8 @@ npm install -g aka-archiver
 
 ## Usage
 
+### Commandline usage
+
 Set the following environment variables the proper values based on your Akamai account:
 
 ```
@@ -53,4 +55,29 @@ Save only data centers configuration:
 
 ```
 aka-archive dataCenters yourdomain.akadns.net
+```
+
+
+### Module usage
+
+```javascript
+var Archiver = require('aka-archiver'),
+    archiver = new Archiver({
+      clientToken: 'yourClientToken',
+      clientSecret: 'yourClientSecret',
+      accessToken: 'yourAccessToken',
+      edgegridHost: 'yourEdgegridHost'
+    });
+
+archiver.domain('yourdomain', function(err) {
+  if (err) { /* handle error */ }
+});
+
+archiver.properties('yourdomain', function(err) {
+  if (err) { /* handle error */ }
+});
+
+archiver.properties('yourdomain', function(err) {
+  if (err) { /* handle error */ }
+});
 ```
