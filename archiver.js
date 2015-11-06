@@ -62,7 +62,6 @@ function Archiver(config) {
       });
 
       this.eg.send(function(data, response) {
-        console.log(data);
         if (callback) {
           callback(data);
         }

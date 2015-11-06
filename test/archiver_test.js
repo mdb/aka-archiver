@@ -13,65 +13,86 @@ var Archiver = require('../archiver'),
       return nock('https://host.com')
         .get(path)
         .reply(200, resp);
+    },
+    mockPut = function(path, data, resp) {
+      return nock('https://host.com')
+        .put(path, data)
+        .reply(200, resp);
     };
 
+
 describe('archiver', function() {
-  var result;
+  describe('the archiving functionality', function() {
+    var result;
 
-  afterEach(function() {
-    fs.unlinkSync(result);
-  });
+    afterEach(function() {
+      fs.unlinkSync(result);
+    });
 
-  describe('#domain', function() {
-    it('performs a request to the proper domain endpoint and archives its response', function(done) {
-      result = 'someDomain_domain.json';
+    describe('#domain', function() {
+      it('performs a request to the proper domain endpoint and archives its response', function(done) {
+        result = 'someDomain_domain.json';
 
-      mockGet('/config-gtm/v1/domains/someDomain', 'domains');
+        mockGet('/config-gtm/v1/domains/someDomain', 'domains');
 
-      archiver.domain('someDomain', function(err) {
-        assert.equal(fs.readFileSync(result), 'domains');
+        archiver.domain('someDomain', function(err) {
+          assert.equal(fs.readFileSync(result), 'domains');
 
-        done();
+          done();
+        });
+      });
+    });
+
+    describe('#properties', function() {
+      it('performs a request to the proper properties endpoint and archives its response', function(done) {
+        result = 'someDomain_properties.json';
+
+        mockGet('/config-gtm/v1/domains/someDomain/properties', 'properties');
+
+        archiver.properties('someDomain', function(err) {
+          assert.equal(fs.readFileSync(result), 'properties');
+
+          done();
+        });
+      });
+    });
+
+    describe('#dataCenters', function() {
+      it('performs a request to the proper data centers endpoint and archives its response', function(done) {
+        result = 'someDomain_dataCenters.json';
+
+        mockGet('/config-gtm/v1/domains/someDomain/datacenters', 'dataCenters');
+
+        archiver.dataCenters('someDomain', function(err) {
+          assert.equal(fs.readFileSync(result), 'dataCenters');
+
+          done();
+        });
+      });
+    });
+
+    describe('#datacenters', function() {
+      it('performs a request to the proper data centers endpoint and archives its response', function(done) {
+        result = 'someDomain_dataCenters.json';
+
+        mockGet('/config-gtm/v1/domains/someDomain/datacenters', 'dataCenters');
+
+        archiver.datacenters('someDomain', function(err) {
+          assert.equal(fs.readFileSync(result), 'dataCenters');
+
+          done();
+        });
       });
     });
   });
 
-  describe('#properties', function() {
-    it('performs a request to the proper properties endpoint and archives its response', function(done) {
-      result = 'someDomain_properties.json';
+  describe('#restore', function() {
+    it('performs a PUT request to the proper domain endpoint with the data it is passed', function(done) {
+      fs.writeFileSync('someDomain_domain.json', 'fakeData');
+      mockPut('/config-gtm/v1/domains/someDomain', 'fakeData', 'fakeResp');
 
-      mockGet('/config-gtm/v1/domains/someDomain/properties', 'properties');
-
-      archiver.properties('someDomain', function(err) {
-        assert.equal(fs.readFileSync(result), 'properties');
-
-        done();
-      });
-    });
-  });
-
-  describe('#dataCenters', function() {
-    it('performs a request to the proper data centers endpoint and archives its response', function(done) {
-      result = 'someDomain_dataCenters.json';
-
-      mockGet('/config-gtm/v1/domains/someDomain/datacenters', 'dataCenters');
-
-      archiver.dataCenters('someDomain', function(err) {
-        assert.equal(fs.readFileSync(result), 'dataCenters');
-
-        done();
-      });
-    });
-  });
-
-  describe('#datacenters', function() {
-    it('performs a request to the proper data centers endpoint and archives its response', function(done) {
-      result = 'someDomain_dataCenters.json';
-
-      mockGet('/config-gtm/v1/domains/someDomain/datacenters', 'dataCenters');
-
-      archiver.datacenters('someDomain', function(err) {
-        assert.equal(fs.readFileSync(result), 'dataCenters');
+      archiver.restore('someDomain', 'someDomain_domain.json', function(data) {
+        assert.equal(data, 'fakeResp');
 
         done();
       });
