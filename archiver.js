@@ -57,6 +57,10 @@ function Archiver(config) {
     var domain = jsonFile.split('_domain.json')[0];
 
     fs.readFile(jsonFile, 'utf8', function(err, data) {
+      if (err && callback) {
+        callback(err, undefined);
+      }
+
       this._authenticate({
         path: endpoints.domain(domain),
         method: 'PUT',
@@ -65,7 +69,7 @@ function Archiver(config) {
 
       this.eg.send(function(data, response) {
         if (callback) {
-          callback(data);
+          callback(undefined, data);
         }
       });
     }.bind(this));
@@ -84,11 +88,11 @@ function Archiver(config) {
 
     this._fetch(endpoints[type](domain), function(data) {
       fs.writeFile(file, data, function(err) {
-        if(err) { return console.log(err); }
+        if (err) { return console.log(err, undefined); }
 
         console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
 
-        if (callback) { callback(err); }
+        if (callback) { callback(undefined, data); }
       });
     });
   };

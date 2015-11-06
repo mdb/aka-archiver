@@ -62,7 +62,7 @@ aka-archive dataCenters yourdomain.akadns.net
 Restore a GTM configuration, given a `yourdomain.akadns.net_domain.json` GTM domain backup:
 
 ```
-aka-archive restore yourdomain.akadns.net yourdomain.akadns.net_domain.json
+aka-archive restore yourdomain.akadns.net_domain.json
 ```
 
 ### Module usage
@@ -86,5 +86,12 @@ archiver.properties('yourdomain', function(err) {
 
 archiver.properties('yourdomain', function(err) {
   if (err) { /* handle error */ }
+});
+
+archiver.restore('yourdomain_domain.json', function(err, data) {
+  if (err) { /* handle error */ }
+
+  // the response body from the Akamai PUT
+  console.log(data);
 });
 ```
