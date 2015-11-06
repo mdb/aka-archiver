@@ -26,8 +26,8 @@ function Archiver(config) {
     this.dataCenters(domain, callback);
   };
 
-  this.restore = function(domain, domainJsonFile, callback) {
-    this._restore(domain, domainJsonFile, callback);
+  this.restore = function(domainJsonFile, callback) {
+    this._restore(domainJsonFile, callback);
   };
 
   this.all = function(domain) {
@@ -53,7 +53,9 @@ function Archiver(config) {
     });
   };
 
-  this._restore = function(domain, jsonFile, callback) {
+  this._restore = function(jsonFile, callback) {
+    var domain = jsonFile.split('_domain.json')[0];
+
     fs.readFile(jsonFile, 'utf8', function(err, data) {
       this._authenticate({
         path: endpoints.domain(domain),

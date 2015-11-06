@@ -91,7 +91,7 @@ describe('archiver', function() {
       fs.writeFileSync('someDomain_domain.json', 'fakeData');
       mockPut('/config-gtm/v1/domains/someDomain', 'fakeData', 'fakeResp');
 
-      archiver.restore('someDomain', 'someDomain_domain.json', function(data) {
+      archiver.restore('someDomain_domain.json', function(data) {
         assert.equal(data, 'fakeResp');
 
         done();

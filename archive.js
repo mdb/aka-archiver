@@ -9,8 +9,4 @@ var Archiver = require('./archiver'),
       edgegridHost: env.AKAMAI_EDGEGRID_HOST
     });
 
-if (process.argv[2] === 'restore') {
-  archiver.restore(process.argv[3], process.argv[4]);
-} else {
-  archiver[process.argv[2]](process.argv[3]);
-}
+archiver[process.argv[2]](process.argv[3]);
