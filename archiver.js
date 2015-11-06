@@ -26,25 +26,52 @@ function Archiver(config) {
     this.dataCenters(domain, callback);
   };
 
+  this.restore = function(domain, domainJsonFile, callback) {
+    this._restore(domain, domainJsonFile, callback);
+  };
+
   this.all = function(domain) {
     this.domain(domain);
     this.properties(domain);
     this.dataCenters(domain);
   };
 
-  this._authenticate = function(path) {
+  this._authenticate = function(opts) {
+    var options = {
+      path: opts.path,
+      method: opts.method || 'GET',
+      body: opts.body || {},
+    };
+
     this.eg.auth({
-      'path': path,
-      'method': 'GET',
-      'headers': {
+      path: options.path,
+      method: options.method,
+      headers: {
         'Content-Type': 'application/json'
       },
-      'body': {}
+      body: options.body
     });
   };
 
+  this._restore = function(domain, jsonFile, callback) {
+    fs.readFile(jsonFile, 'utf8', function(err, data) {
+      this._authenticate({
+        path: endpoints.domain(domain),
+        method: 'PUT',
+        body: data
+      });
+
+      this.eg.send(function(data, response) {
+        console.log(data);
+        if (callback) {
+          callback(data);
+        }
+      });
+    }.bind(this));
+  };
+
   this._fetch = function(path, callback) {
-    this._authenticate(path);
+    this._authenticate({ path: path });
 
     this.eg.send(function(data, response) {
       callback(data);
