@@ -88,11 +88,14 @@ describe('archiver', function() {
 
   describe('#restore', function() {
     it('performs a PUT request to the proper domain endpoint with the data it is passed', function(done) {
-      fs.writeFileSync('someDomain_domain.json', 'fakeData');
+      var result = 'someDomain_domain.json';
+      fs.writeFileSync(result, 'fakeData');
       mockPut('/config-gtm/v1/domains/someDomain', 'fakeData', 'fakeResp');
 
       archiver.restore('someDomain_domain.json', function(data) {
         assert.equal(data, 'fakeResp');
+
+        fs.unlinkSync(result);
 
         done();
       });
