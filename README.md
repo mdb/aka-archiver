@@ -2,6 +2,8 @@
 
 A Node-based commandline tool that saves Akamai GTM configuration to local JSON files.
 
+`aka-archiver` also offers Akamai GTM restoration functionality.
+
 ## Why?
 
 Akamai provides no rollback functionality, version control, or backups of GTM domain, property, and data center configuration.
@@ -57,6 +59,11 @@ Save only data centers configuration:
 aka-archive dataCenters yourdomain.akadns.net
 ```
 
+Restore a GTM configuration, given a `yourdomain.akadns.net_domain.json` GTM domain backup:
+
+```
+aka-archive restore yourdomain.akadns.net yourdomain.akadns.net_domain.json
+```
 
 ### Module usage
 
