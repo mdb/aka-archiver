@@ -1,1 +1,4 @@
 node_modules
+*_domain.json
+*_properties.json
+*_dataCenters.json
