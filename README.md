@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mdb/aka-archiver.svg?branch=master)](https://travis-ci.org/mdb/aka-archiver)
+
 # aka-archiver
 
 A Node-based commandline tool that saves Akamai GTM configuration to local JSON files.
