@@ -1,6 +1,6 @@
 {
   "name": "aka-archiver",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Back up your Akamai GTM configuration as JSON files",
   "author": "Mike Ball",
   "main": "archive.js",
