@@ -1,6 +1,5 @@
 var EdgeGrid = require('edgegrid'),
     fs = require('fs'),
-    Promise = require('promise'),
     endpoints = require('./endpoints'),
     git = require('./git');
 
