@@ -1,6 +1,8 @@
 var EdgeGrid = require('edgegrid'),
+    fs = require('fs'),
+    Promise = require('promise'),
     endpoints = require('./endpoints'),
-    fs = require('fs');
+    git = require('./git');
 
 function Archiver(config) {
   this.eg = new EdgeGrid(
@@ -11,15 +13,15 @@ function Archiver(config) {
   );
 
   this.domain = function(domain, callback) {
-    this._archive('domain', domain, callback);
+    this._save('domain', domain, callback);
   };
 
   this.properties = function(domain, callback) {
-    this._archive('properties', domain, callback);
+    this._save('properties', domain, callback);
   };
 
   this.dataCenters = function(domain, callback) {
-    this._archive('dataCenters', domain, callback);
+    this._save('dataCenters', domain, callback);
   };
 
   this.datacenters = function(domain, callback) {
@@ -34,6 +36,24 @@ function Archiver(config) {
     this.domain(domain);
     this.properties(domain);
     this.dataCenters(domain);
+  };
+
+  this.archive = function() {
+    git.modifications(function(err, mods) {
+      if (err) { console.log(err); }
+
+      if (mods) {
+        git.add(mods, function(err, success) {
+          if (err) { console.log(err); }
+
+          git.commit(function(err, success) {
+            if (err) { console.log(err); }
+
+            console.log('Archived changes!');
+          });
+        });
+      }
+    });
   };
 
   this._authenticate = function(opts) {
@@ -83,7 +103,7 @@ function Archiver(config) {
     });
   };
 
-  this._archive = function(type, domain, callback) {
+  this._save = function(type, domain, callback) {
     var file = domain + '_' + type + '.json';
 
     this._fetch(endpoints[type](domain), function(data) {
