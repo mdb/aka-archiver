@@ -31,10 +31,22 @@ function Archiver(config) {
     this._restore(domainJsonFile, callback);
   };
 
-  this.all = function(domain) {
-    this.domain(domain);
-    this.properties(domain);
-    this.dataCenters(domain);
+  this.all = function(domain, callback) {
+    var self = this;
+
+    self.domain(domain, function(err, data) {
+      if (err) { callback(err); }
+
+      self.properties(domain, function(err, data) {
+        if (err) { callback(err); }
+
+        self.dataCenters(domain, function(err, data) {
+          if (err) { callback(err); }
+
+          callback(undefined, 'Archived full GTM configuration');
+        });
+      });
+    });
   };
 
   this.archive = function() {

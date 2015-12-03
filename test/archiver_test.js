@@ -102,4 +102,42 @@ describe('archiver', function() {
       });
     });
   });
+
+  describe('#all', function() {
+    beforeEach(function() {
+      mockGet('/config-gtm/v1/domains/someDomain', 'domain');
+      mockGet('/config-gtm/v1/domains/someDomain/properties', 'properties');
+      mockGet('/config-gtm/v1/domains/someDomain/datacenters', 'dataCenters');
+    });
+
+    it('performs a request to the proper domains endpoint and archives its response', function(done) {
+      result = 'someDomain_domain.json';
+
+      archiver.all('someDomain', function(err) {
+        assert.equal(fs.readFileSync(result), 'domain');
+
+        done();
+      });
+    });
+
+    it('performs a request to the proper domains endpoint and archives its response', function(done) {
+      result = 'someDomain_properties.json';
+
+      archiver.all('someDomain', function(err) {
+        assert.equal(fs.readFileSync(result), 'properties');
+
+        done();
+      });
+    });
+
+    it('performs a request to the proper data centers endpoint and archives its response', function(done) {
+      result = 'someDomain_dataCenters.json';
+
+      archiver.all('someDomain', function(err) {
+        assert.equal(fs.readFileSync(result), 'dataCenters');
+
+        done();
+      });
+    });
+  });
 });
