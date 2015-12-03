@@ -49,7 +49,7 @@ function Archiver(config) {
     });
   };
 
-  this.archive = function() {
+  this.archive = function(callback) {
     git.modifications(function(err, mods) {
       if (err) { console.log(err); }
 
@@ -58,11 +58,13 @@ function Archiver(config) {
           if (err) { console.log(err); }
 
           git.commit(function(err, success) {
-            if (err) { console.log(err); }
+            if (err) { callback(err); }
 
-            console.log('Archived changes!');
+            if (callback) { callback(undefined, 'Archived changes'); }
           });
         });
+      } else {
+        if (callback) { callback(undefined, 'No changes'); }
       }
     });
   };
