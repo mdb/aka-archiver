@@ -12,44 +12,61 @@ function Archiver(config) {
     config.edgegridHost
   );
 
-  this.domain = function(domain, callback) {
-    this._save('domain', domain, callback);
+  this.domain = function(domain) {
+    return new Promise(function(resolve, reject) {
+      this._save('domain', domain, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 
-  this.properties = function(domain, callback) {
-    this._save('properties', domain, callback);
+  this.properties = function(domain) {
+    return new Promise(function(resolve, reject) {
+      this._save('properties', domain, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 
-  this.dataCenters = function(domain, callback) {
-    this._save('dataCenters', domain, callback);
+  this.dataCenters = function(domain) {
+    return new Promise(function(resolve, reject) {
+      this._save('dataCenters', domain, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 
-  this.datacenters = function(domain, callback) {
-    this.dataCenters(domain, callback);
+  this.datacenters = function(domain) {
+    return this.dataCenters(domain);
   };
 
-  this.restore = function(domainJsonFile, callback) {
-    this._restore(domainJsonFile, callback);
-  };
+  this.all = function(domain) {
+    var success = function() { return true; },
+        domainBack = this.domain(domain).then(success),
+        propsBack = this.properties(domain).then(success),
+        dcsBack = this.dataCenters(domain).then(success);
 
-  this.all = function(domain, callback) {
-    var self = this;
-
-    self.domain(domain, function(err, data) {
-      if (err) { callback(err); }
-
-      self.properties(domain, function(err, data) {
-        if (err) { callback(err); }
-
-        self.dataCenters(domain, function(err, data) {
-          if (err) { callback(err); }
-
-          if (callback) {
-            callback(undefined, 'Archived full GTM configuration');
-          }
-        });
+    return new Promise(function(resolve, reject) {
+      Promise.all([domainBack, propsBack, dcsBack]).then(function() {
+        resolve('Saved full Akamai GTM');
       });
     });
+  };
+
+  this.restore = function(domainJsonFile) {
+    return new Promise(function(resolve, reject) {
+      this._restore(domainJsonFile, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 
   this.archive = function(callback) {
@@ -126,7 +143,7 @@ function Archiver(config) {
       fs.writeFile(file, data, function(err) {
         if (err) { return console.log(err, undefined); }
 
-        console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
+        console.log('Saved ' + domain + ' ' + type + ' data to ' + file);
 
         if (callback) { callback(undefined, data); }
       });

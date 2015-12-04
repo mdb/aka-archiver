@@ -13,7 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "edgegrid": "https://github.com/mdb/AkamaiOPEN-edgegrid-node.git#redirect-support",
-    "simple-git": "^1.11.0"
+    "simple-git": "^1.11.0",
+    "promise": "7.0.4"
   },
   "devDependencies": {
     "mocha": "1.14.x",
