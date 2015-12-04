@@ -26,4 +26,12 @@ module.exports = {
       callback(undefined, success);
     });
   },
+
+  push: function(remote, branch, callback) {
+    repo.push(remote, branch, function(err, success) {
+      if (err) { callback(err, undefined); }
+
+      callback(undefined, success);
+    });
+  }
 };

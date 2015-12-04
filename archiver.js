@@ -5,6 +5,11 @@ var EdgeGrid = require('edgegrid'),
     git = require('./git');
 
 function Archiver(config) {
+  this.repo = {
+    remote: config.remote || 'origin',
+    branch: config.branch || 'master'
+  };
+
   this.eg = new EdgeGrid(
     config.clientToken,
     config.clientSecret,
@@ -52,6 +57,8 @@ function Archiver(config) {
   };
 
   this.archive = function(callback) {
+    var archiver = this;
+
     git.modifications(function(err, mods) {
       if (err) { console.log(err); }
 
@@ -62,7 +69,11 @@ function Archiver(config) {
           git.commit(function(err, success) {
             if (err) { callback(err); }
 
-            if (callback) { callback(undefined, 'Archived changes'); }
+            git.push(archiver.repo.remote, archiver.repo.branch, function(err, success) {
+              if (err) { callback(err); }
+
+              if (callback) { callback(undefined, 'Archived changes'); }
+            });
           });
         });
       } else {
