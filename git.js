@@ -16,6 +16,7 @@ module.exports = {
   add: function(files) {
     return new Promise(function(resolve, reject) {
       repo.add(files, function(err, success) {
+        if (!files) { resolve('Nothing to add'); }
         if (err) { reject(err); }
 
         resolve(success);
