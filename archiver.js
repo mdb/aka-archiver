@@ -1,6 +1,7 @@
 var EdgeGrid = require('edgegrid'),
     fs = require('fs'),
     endpoints = require('./endpoints'),
+    Promise = require('promise'),
     git = require('./git');
 
 function Archiver(config) {
@@ -43,7 +44,9 @@ function Archiver(config) {
         self.dataCenters(domain, function(err, data) {
           if (err) { callback(err); }
 
-          callback(undefined, 'Archived full GTM configuration');
+          if (callback) {
+            callback(undefined, 'Archived full GTM configuration');
+          }
         });
       });
     });
