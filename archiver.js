@@ -56,30 +56,21 @@ function Archiver(config) {
     }.bind(this));
   };
 
-  this.archive = function(callback) {
-    var archiver = this;
-
-    git.modifications(function(err, mods) {
-      if (err) { console.log(err); }
-
-      if (mods) {
-        git.add(mods, function(err, success) {
-          if (err) { console.log(err); }
-
-          git.commit(function(err, success) {
-            if (err) { callback(err); }
-
-            git.push(archiver.repo.remote, archiver.repo.branch, function(err, success) {
-              if (err) { callback(err); }
-
-              if (callback) { callback(undefined, 'Archived changes'); }
-            });
-          });
-        });
-      } else {
-        if (callback) { callback(undefined, 'No changes'); }
-      }
-    });
+  this.archive = function() {
+    return new Promise(function(resolve, reject) {
+      git.modifications().then(function(mods) {
+        if (mods) {
+          git.add()
+            .then(function() {
+              git.push(this.repo.remote, this.repo.branch).then(function(data) {
+                resolve('Archived changes');
+              }.bind(this));
+            }.bind(this));
+        } else {
+          resolve('No changes');
+        }
+      });
+    }.bind(this));
   };
 
   this._authenticate = function(opts) {

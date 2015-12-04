@@ -4,34 +4,42 @@ var git = require('simple-git'),
 
 module.exports = {
   modifications: function(callback) {
-    repo.status(function(err, status) {
-      if (err) { callback(err, undefined); }
+    return new Promise(function(resolve, reject) {
+      repo.status(function(err, status) {
+        if (err) { reject(err); }
 
-      callback(undefined, status.modified);
+        resolve(status.modified);
+      });
     });
   },
 
-  add: function(files, callback) {
-    repo.add(files, function(err, success) {
-      if (err) { callback(err, undefined); }
+  add: function(files) {
+    return new Promise(function(resolve, reject) {
+      repo.add(files, function(err, success) {
+        if (err) { reject(err); }
 
-      callback(undefined, success);
+        resolve(success);
+      });
     });
   },
 
-  commit: function(callback) {
-    repo.commit('Archiving changes', function(err, success) {
-      if (err) { callback(err, undefined); }
+  commit: function() {
+    return new Promise(function(resolve, reject) {
+      repo.commit('Archiving changes', function(err, success) {
+        if (err) { reject(err); }
 
-      callback(undefined, success);
+        resolve(success);
+      });
     });
   },
 
-  push: function(remote, branch, callback) {
-    repo.push(remote, branch, function(err, success) {
-      if (err) { callback(err, undefined); }
+  push: function(remote, branch) {
+    return new Promise(function(resolve, reject) {
+      repo.push(remote, branch, function(err, success) {
+        if (err) { reject(err); }
 
-      callback(undefined, success);
+        resolve(success);
+      });
     });
   }
 };
