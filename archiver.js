@@ -13,33 +13,15 @@ function Archiver(config) {
   );
 
   this.domain = function(domain) {
-    return new Promise(function(resolve, reject) {
-      this._save('domain', domain, function(err, data) {
-        if (err) { reject(err); }
-
-        resolve(data);
-      });
-    }.bind(this));
+    return this._savePromise('domain', domain);
   };
 
   this.properties = function(domain) {
-    return new Promise(function(resolve, reject) {
-      this._save('properties', domain, function(err, data) {
-        if (err) { reject(err); }
-
-        resolve(data);
-      });
-    }.bind(this));
+    return this._savePromise('properties', domain);
   };
 
   this.dataCenters = function(domain) {
-    return new Promise(function(resolve, reject) {
-      this._save('dataCenters', domain, function(err, data) {
-        if (err) { reject(err); }
-
-        resolve(data);
-      });
-    }.bind(this));
+    return this._savePromise('dataCenters', domain);
   };
 
   this.datacenters = function(domain) {
@@ -148,6 +130,16 @@ function Archiver(config) {
         if (callback) { callback(undefined, data); }
       });
     });
+  };
+
+  this._savePromise = function(type, domain) {
+    return new Promise(function(resolve, reject) {
+      this._save(type, domain, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 }
 
