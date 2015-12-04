@@ -57,20 +57,21 @@ function Archiver(config) {
   };
 
   this.archive = function() {
+    var repo = this.repo;
+
     return new Promise(function(resolve, reject) {
       git.modifications().then(function(mods) {
         if (mods) {
-          git.add()
-            .then(function() {
-              git.push(this.repo.remote, this.repo.branch).then(function(data) {
-                resolve('Archived changes');
-              }.bind(this));
-            }.bind(this));
+          git.add(mods).then(function() {
+            git.push(repo.remote, repo.branch).then(function(data) {
+              resolve('Archived changes');
+            });
+          });
         } else {
           resolve('No changes');
         }
       });
-    }.bind(this));
+    });
   };
 
   this._authenticate = function(opts) {
