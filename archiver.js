@@ -56,18 +56,19 @@ function Archiver(config) {
   this.archive = function() {
     return new Promise(function(resolve, reject) {
       git.modifications().then(function(mods) {
-        if (mods && mods.length) {
-          git.add(mods)
-            .then(git.commit)
-            .then(git.push)
-              .then(function(data) {
-                resolve('Archived changes');
-              }, function(err) {
-                console.log(err);
-              });
-        } else {
+        if (!mods || !mods.length) {
           resolve('No changes to archive');
+          return;
         }
+
+        git.add(mods)
+          .then(git.commit)
+          .then(git.push)
+            .then(function(data) {
+              resolve('Archived changes');
+            }, function(err) {
+              console.log(err);
+            });
       });
     });
   };
