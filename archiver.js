@@ -2,13 +2,10 @@ var EdgeGrid = require('edgegrid'),
     fs = require('fs'),
     endpoints = require('./endpoints'),
     Promise = require('promise'),
-    git = require('./git');
+    Git = require('./git');
 
 function Archiver(config) {
-  this.repo = {
-    remote: config.remote || 'origin',
-    branch: config.branch || 'master'
-  };
+  var git = new Git(config);
 
   this.eg = new EdgeGrid(
     config.clientToken,
@@ -57,20 +54,19 @@ function Archiver(config) {
   };
 
   this.archive = function() {
-    var repo = this.repo;
-
     return new Promise(function(resolve, reject) {
       git.modifications().then(function(mods) {
-        if (mods) {
+        if (mods && mods.length) {
           git.add(mods)
             .then(git.commit)
-            .then(function() {
-              git.push(repo.remote, repo.branch).then(function(data) {
+            .then(git.push)
+              .then(function(data) {
                 resolve('Archived changes');
+              }, function(err) {
+                console.log(err);
               });
-          });
         } else {
-          resolve('No changes');
+          resolve('No changes to archive');
         }
       });
     });

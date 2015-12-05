@@ -2,8 +2,13 @@ var git = require('simple-git'),
     path = require('path'),
     repo = git(path.resolve());
 
-module.exports = {
-  modifications: function(callback) {
+function Git(conf) {
+  var config = {
+    remote: conf && conf.remote ? conf.remote : 'origin',
+    branch: conf && conf.branch ? conf.branch : 'master'
+  };
+
+  this.modifications = function(callback) {
     return new Promise(function(resolve, reject) {
       repo.status(function(err, status) {
         if (err) { reject(err); }
@@ -11,9 +16,9 @@ module.exports = {
         resolve(status.modified);
       });
     });
-  },
+  };
 
-  add: function(files) {
+  this.add = function(files) {
     return new Promise(function(resolve, reject) {
       repo.add(files, function(err, success) {
         if (!files) { resolve('Nothing to add'); }
@@ -22,9 +27,9 @@ module.exports = {
         resolve(success);
       });
     });
-  },
+  };
 
-  commit: function() {
+  this.commit = function() {
     return new Promise(function(resolve, reject) {
       repo.commit('Archiving changes', function(err, success) {
         if (err) { reject(err); }
@@ -32,15 +37,18 @@ module.exports = {
         resolve(success);
       });
     });
-  },
+  };
 
-  push: function(remote, branch) {
+  this.push = function() {
     return new Promise(function(resolve, reject) {
-      repo.push(remote, branch, function(err, success) {
+      console.log('Pushing changes to ' + config.remote + ', ' + config.branch);
+      repo.push(config.remote, config.branch, function(err, success) {
         if (err) { reject(err); }
 
         resolve(success);
       });
     });
-  }
-};
+  };
+}
+
+module.exports = Git;
