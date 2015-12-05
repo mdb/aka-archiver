@@ -62,10 +62,12 @@ function Archiver(config) {
     return new Promise(function(resolve, reject) {
       git.modifications().then(function(mods) {
         if (mods) {
-          git.add(mods).then(function() {
-            git.push(repo.remote, repo.branch).then(function(data) {
-              resolve('Archived changes');
-            });
+          git.add(mods)
+            .then(git.commit)
+            .then(function() {
+              git.push(repo.remote, repo.branch).then(function(data) {
+                resolve('Archived changes');
+              });
           });
         } else {
           resolve('No changes');
