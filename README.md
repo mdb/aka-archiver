@@ -2,7 +2,7 @@
 
 # aka-archiver
 
-A Node-based commandline tool that saves Akamai GTM configuration to local JSON files.
+A Node-based CLI tool and NPM module that saves Akamai GTM configuration to local JSON files & git.
 
 `aka-archiver` also offers Akamai GTM restoration functionality.
 
@@ -19,6 +19,97 @@ npm install -g aka-archiver
 ```
 
 ## Usage
+
+`aka-archiver` can be used as an NPM module or as a CLI.
+
+### Module usage
+
+`aka-archiver`'s API leverages JavaScript promises.
+
+#### Basic Usage, TL;DR
+
+Back up all GTM configuration and commit/push the JSON configuration to a git repo:
+
+```javascript
+var Archiver = require('aka-archiver'),
+    archiver = new Archiver({
+      clientToken: 'yourClientToken',
+      clientSecret: 'yourClientSecret',
+      accessToken: 'yourAccessToken',
+      edgegridHost: 'yourEdgegridHost'
+    });
+
+archiver.all()
+  .then(archiver.archive)
+  .then(function(msg) {
+    console.log(msg);
+  });
+});
+```
+
+Note that this defaults to `origin`, `master`.
+
+To declare a specific remote & branch:
+
+```javascript
+var Archiver = require('aka-archiver'),
+    archiver = new Archiver({
+      clientToken: 'yourClientToken',
+      clientSecret: 'yourClientSecret',
+      accessToken: 'yourAccessToken',
+      edgegridHost: 'yourEdgegridHost',
+      remote: 'your_remote',
+      branch: 'your_branch'
+    });
+```
+
+#### Full API
+
+```javascript
+var Archiver = require('aka-archiver'),
+    archiver = new Archiver({
+      clientToken: 'yourClientToken',
+      clientSecret: 'yourClientSecret',
+      accessToken: 'yourAccessToken',
+      edgegridHost: 'yourEdgegridHost'
+    });
+
+archiver.all('yourdomain').then(function() {
+  console.log('saved full GTM configuration to local JSON files!');
+}, function(err) {
+  // handle error
+});
+
+archiver.domain('yourdomain').then(function() {
+  console.log('saved GTM domain configuration to local JSON file!');
+}, function(err) {
+  // handle error
+});
+
+archiver.properties('yourdomain').then(function() {
+  console.log('saved GTM properties configuration to local JSON file!');
+}, function(err) {
+  // handle error
+});
+
+archiver.dataCenters('yourdomain').then(function() {
+  console.log('saved GTM data centers configuration to local JSON file!');
+}, function(err) {
+  // handle error
+});
+
+archiver.archive().then(function() {
+  console.log('Pushed local GTM JSON backup to git repository!');
+}, function(err) {
+  // handle error
+});
+
+archiver.restore('yourdomain_domain.json').then(function() {
+  console.log('Restored GTM configuration to that contained in yourdomain_domain.json');
+}, function(err) {
+  // handle error
+});
+```
 
 ### Commandline usage
 
@@ -65,35 +156,4 @@ Restore a GTM configuration, given a `yourdomain.akadns.net_domain.json` GTM dom
 
 ```
 aka-archive restore yourdomain.akadns.net_domain.json
-```
-
-### Module usage
-
-```javascript
-var Archiver = require('aka-archiver'),
-    archiver = new Archiver({
-      clientToken: 'yourClientToken',
-      clientSecret: 'yourClientSecret',
-      accessToken: 'yourAccessToken',
-      edgegridHost: 'yourEdgegridHost'
-    });
-
-archiver.domain('yourdomain', function(err) {
-  if (err) { /* handle error */ }
-});
-
-archiver.properties('yourdomain', function(err) {
-  if (err) { /* handle error */ }
-});
-
-archiver.properties('yourdomain', function(err) {
-  if (err) { /* handle error */ }
-});
-
-archiver.restore('yourdomain_domain.json', function(err, data) {
-  if (err) { /* handle error */ }
-
-  // the response body from the Akamai PUT
-  console.log(data);
-});
 ```

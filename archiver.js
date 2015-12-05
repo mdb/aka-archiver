@@ -1,8 +1,12 @@
 var EdgeGrid = require('edgegrid'),
+    fs = require('fs'),
     endpoints = require('./endpoints'),
-    fs = require('fs');
+    Promise = require('promise'),
+    Git = require('./git');
 
 function Archiver(config) {
+  var git = new Git(config);
+
   this.eg = new EdgeGrid(
     config.clientToken,
     config.clientSecret,
@@ -10,30 +14,63 @@ function Archiver(config) {
     config.edgegridHost
   );
 
-  this.domain = function(domain, callback) {
-    this._archive('domain', domain, callback);
+  this.domain = function(domain) {
+    return this._savePromise('domain', domain);
   };
 
-  this.properties = function(domain, callback) {
-    this._archive('properties', domain, callback);
+  this.properties = function(domain) {
+    return this._savePromise('properties', domain);
   };
 
-  this.dataCenters = function(domain, callback) {
-    this._archive('dataCenters', domain, callback);
+  this.dataCenters = function(domain) {
+    return this._savePromise('dataCenters', domain);
   };
 
-  this.datacenters = function(domain, callback) {
-    this.dataCenters(domain, callback);
-  };
-
-  this.restore = function(domainJsonFile, callback) {
-    this._restore(domainJsonFile, callback);
+  this.datacenters = function(domain) {
+    return this.dataCenters(domain);
   };
 
   this.all = function(domain) {
-    this.domain(domain);
-    this.properties(domain);
-    this.dataCenters(domain);
+    var success = function() { return true; },
+        domainBack = this.domain(domain).then(success),
+        propsBack = this.properties(domain).then(success),
+        dcsBack = this.dataCenters(domain).then(success);
+
+    return new Promise(function(resolve, reject) {
+      Promise.all([domainBack, propsBack, dcsBack]).then(function() {
+        resolve('Saved full Akamai GTM');
+      });
+    });
+  };
+
+  this.restore = function(domainJsonFile) {
+    return new Promise(function(resolve, reject) {
+      this._restore(domainJsonFile, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
+  };
+
+  this.archive = function() {
+    return new Promise(function(resolve, reject) {
+      git.modifications().then(function(mods) {
+        if (!mods || !mods.length) {
+          resolve('No changes to archive');
+          return;
+        }
+
+        git.add(mods)
+          .then(git.commit)
+          .then(git.push)
+            .then(function(data) {
+              resolve('Archived changes');
+            }, function(err) {
+              console.log(err);
+            });
+      });
+    });
   };
 
   this._authenticate = function(opts) {
@@ -83,18 +120,28 @@ function Archiver(config) {
     });
   };
 
-  this._archive = function(type, domain, callback) {
+  this._save = function(type, domain, callback) {
     var file = domain + '_' + type + '.json';
 
     this._fetch(endpoints[type](domain), function(data) {
       fs.writeFile(file, data, function(err) {
         if (err) { return console.log(err, undefined); }
 
-        console.log('Archived ' + domain + ' ' + type + ' data in ' + file);
+        console.log('Saved ' + domain + ' ' + type + ' data to ' + file);
 
         if (callback) { callback(undefined, data); }
       });
     });
+  };
+
+  this._savePromise = function(type, domain) {
+    return new Promise(function(resolve, reject) {
+      this._save(type, domain, function(err, data) {
+        if (err) { reject(err); }
+
+        resolve(data);
+      });
+    }.bind(this));
   };
 }
 
