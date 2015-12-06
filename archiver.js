@@ -125,7 +125,7 @@ function Archiver(config) {
 
     this._fetch(endpoints[type](domain), function(data) {
       fs.writeFile(file, data, function(err) {
-        if (err) { return console.log(err, undefined); }
+        if (err && callback) { callback(err, undefined); }
 
         console.log('Saved ' + domain + ' ' + type + ' data to ' + file);
 
