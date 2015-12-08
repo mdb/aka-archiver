@@ -9,4 +9,7 @@ var Archiver = require('./archiver'),
       edgegridHost: env.AKAMAI_EDGEGRID_HOST
     });
 
-archiver[process.argv[2]](process.argv[3]);
+archiver[process.argv[2]](process.argv[3])
+  .then(function() {
+    console.log('\naka-archive ' + process.argv[2] + ' complete');
+   });
