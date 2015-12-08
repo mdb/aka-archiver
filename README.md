@@ -152,6 +152,13 @@ Save only data centers configuration:
 aka-archive dataCenters yourdomain.akadns.net
 ```
 
+Archive the saved JSON files by committing/pushing any changes to a git repo; this assumes the
+command is executed from within a git repo and that the *.json files are already in the git repo:
+
+```
+aka-archive archive
+```
+
 Restore a GTM configuration, given a `yourdomain.akadns.net_domain.json` GTM domain backup:
 
 ```
